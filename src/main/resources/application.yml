@@ -1,0 +1,56 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 6h   #session过期时间，以秒为单位，session过期后security登录会失效 不到1分钟会默认为1分钟
+      cookie:
+        name: JSESSIONID
+
+eureka:
+  instance:
+    appname: ${spring.application.name}  #在eureka服务上注册的应用程序组的名字，默认为unknow
+    non-secure-port: ${server.port:80} #获取该实例应该接收通信的非安全端口。默认为80
+    prefer-ip-address: true  #将ip注册到eureka不用主机名
+    lease-renewal-interval-in-seconds: 3 #eureka客户需要多长时间发送心跳给eureka服务器，表明它仍然活着,默认为30秒
+    LeaseExpirationDurationInSeconds: 5 #Eureka服务器在接收到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除，默认为90秒
+    metadata-map: #获取与此实例相关联的元数据(key,value)。这个信息被发送到eureka服务器，其他实例可以使用。
+      instanceId: instanceId:${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+        #defaultZone中填写的URL必须包括后缀/eureka，否则各eureka server之间不能通信
+        #defaultZone为默认的Zone，来源于AWS的概念。区域（Region）和可用区（Availability Zone,AZ）是AWS的另外两个概念。区域是指服务器所在的区域，
+        #比如北美洲、南美洲、欧洲和亚洲等，每个区域一般由多个可用区组成。 在本案例中defaultZone是指Eureka Server的注册地址。
+
+spring:
+  application:
+    name: security-authentication
+  profiles:
+    active: local
+  thymeleaf:
+    cache: false #关闭缓存否则没法看到实时页面
+    encoding: utf-8
+    mode: HTML5
+    prefix: classpath:/resources/ #默认可以不用配置
+    suffix: .html #默认可以不用配置
+    servlet:
+      content-type: text/html
+  session:
+    store-type: redis #redis管理session
+mybatis:
+  mapperLocations: classpath:mapper/*.xml  #注意：一定要对应mapper映射xml文件的所在路径
+  typeAliasesPackage: com.ht.authentication.model # 注意：对应实体类的路径
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+api:
+  boot:
+    swagger:
+      enable: true
+      description: securityAPI文档
+      version: 1.0
+      license: ApiBoot
+      license-url: http://apiboot.minbox.io/zh-cn/
+      contact:
+        name: QP
